@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -5,9 +6,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Cronograma da Zigfrida</title>
 <style>
-:root{--bg:#faf7f2;--card:#fff;--tx:#2a2622;--mut:#7a7068;--bd:#e6dfd5;--ac:#2f7d5b;--acbg:#e3f2ea;--now:#fff4d6;--nowbd:#e0a800;--fd:#e8f0fb;--md:#fdeaea;--cl:#efeaf8;
-box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b1917;--card:#262321;--tx:#f0ebe4;--mut:#a39a90;--bd:#3a3531;--ac:#5fc79a;--acbg:#21382d;--now:#3a3218;--nowbd:#e0a800;--fd:#22303f;--md:#3d2626;--cl:#2f2940}}
+:root{--bg:#faf7f2;--card:#fff;--tx:#2a2622;--mut:#7a7068;--bd:#e6dfd5;--ac:#2f7d5b;--acbg:#e3f2ea;--now:#fff4d6;--nowbd:#e0a800;--fd:#e8f0fb;--md:#fdeaea;--cl:#efeaf8;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b1917;--card:#262321;--tx:#f0ebe4;--mut:#a39a90;--bd:#3a3531;--ac:#5fc79a;--acbg:#21382d;--now:#3a3218;--nowbd:#e0a800;--fd:#22303f;--md:#3d2626;--cl:#2f2940}}
 :root[data-theme="dark"]{--bg:#1b1917;--card:#262321;--tx:#f0ebe4;--mut:#a39a90;--bd:#3a3531;--ac:#5fc79a;--acbg:#21382d;--now:#3a3218;--nowbd:#e0a800;--fd:#22303f;--md:#3d2626;--cl:#2f2940}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
@@ -25,109 +25,443 @@ h1{font-size:1.35rem;margin:4px 0 2px}
 .next{background:var(--now);border:1px solid var(--nowbd);border-radius:12px;padding:10px 12px;margin-bottom:12px;font-size:.92rem}
 .t{display:flex;gap:10px;align-items:flex-start;background:var(--card);border:1px solid var(--bd);border-left:5px solid var(--bd);border-radius:12px;padding:10px 12px;margin-bottom:8px;cursor:pointer}
 .t.food{border-left-color:#4a7fc1}.t.med{border-left-color:#d05a5a}.t.care{border-left-color:#8a66c7}
-.t.done{opacity:.55}.t.done .n{text-decoration:line-through}
+.t.done{opacity:.65}.t.done .n{text-decoration:line-through}
 .t.now{background:var(--now);outline:2px solid var(--nowbd)}
 .t input{width:24px;height:24px;margin-top:2px;accent-color:var(--ac);flex:none}
 .h{font-weight:700;min-width:52px;font-variant-numeric:tabular-nums}
 .n{font-weight:600}.i{color:var(--mut);font-size:.85rem;margin-top:2px}
 .set{margin-top:18px;font-size:.85rem;color:var(--mut);border-top:1px solid var(--bd);padding-top:12px}
-.set input{font:inherit;color:var(--tx);background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:5px 8px}
-.set button{font:inherit;margin-left:6px;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:8px;padding:5px 10px;cursor:pointer}
+.set input{font:inherit;color:var(--tx);background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:7px 8px;max-width:100%}
+.set button{font:inherit;margin-left:6px;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:8px;padding:7px 10px;cursor:pointer}
 .note{font-size:.8rem;color:var(--mut);margin-top:10px}
 .end{font-size:.85rem;color:var(--mut);margin:-4px 0 12px}
+.userbox{margin:12px 0;padding:12px;background:var(--card);border:1px solid var(--bd);border-radius:12px}
+.userbox label{display:block;margin-bottom:5px;font-weight:600;color:var(--tx)}
+.userbox input{width:100%}
+.connection{font-size:.8rem;margin-top:12px;display:flex;align-items:center;gap:6px}
+.connection:before{content:"";width:8px;height:8px;border-radius:50%;background:#aaa;display:inline-block}
+.connection.online{color:var(--ac)}
+.connection.online:before{background:#2fbd75}
+.connection.offline{color:#c46b45}
+.connection.offline:before{background:#c46b45}
+.connection.local:before{background:#d0a02b}
 </style>
 </head>
 <body>
 <main>
 <h1>🐱 Zigfrida — cronograma</h1>
 <p class="sub">Medicação, alimentação por sonda e curativos · 3,2 kg</p>
-<div class="nav"><button id="prev" aria-label="Dia anterior">←</button><div class="d" id="dl"></div><button id="nxt" aria-label="Próximo dia">→</button></div>
+
+<div class="userbox">
+<label for="nome">Seu nome</label>
+<input type="text" id="nome" placeholder="Digite seu nome" maxlength="50">
+</div>
+
+<div class="nav">
+<button id="prev" aria-label="Dia anterior">←</button>
+<div class="d" id="dl"></div>
+<button id="nxt" aria-label="Próximo dia">→</button>
+</div>
+
 <div class="bar"><i id="bar"></i></div>
 <div class="prog" id="prog"></div>
 <div class="next" id="next" hidden></div>
 <div id="list"></div>
 <div class="end" id="end"></div>
+
 <div class="set">
-Dia 1 do tratamento: <input type="date" id="start">
-<button id="today">Hoje</button> <button id="reset">Limpar marcações do dia</button>
-<div class="note">Toque em um item para marcar como feito. As marcações ficam salvas neste aparelho. Sempre que dar remédio pela sonda, lave com 10 ml de água depois. Dê o remédio e a alimentação conforme a receita; em caso de dúvida ou piora, fale com o hospital veterinário.</div>
+Dia 1 do tratamento:
+<input type="date" id="start">
+<button id="today">Hoje</button>
+<button id="reset">Limpar marcações do dia</button>
+
+<div class="note">
+Toque em um item para marcar como feito. As marcações são compartilhadas entre os aparelhos conectados. Sempre que der remédio pela sonda, lave com 10 ml de água depois. Dê o remédio e a alimentação conforme a receita; em caso de dúvida ou piora, fale com o hospital veterinário.
+</div>
+
+<div id="connection" class="connection offline">
+Conectando ao Firebase...
+</div>
 </div>
 </main>
+
 <script>
-var KEY="zig:";
-function sget(k){try{return localStorage.getItem(k)}catch(e){return null}}
-function sset(k,v){try{localStorage.setItem(k,v)}catch(e){}}
-function iso(d){var m=d.getMonth()+1,x=d.getDate();return d.getFullYear()+"-"+(m<10?"0":"")+m+"-"+(x<10?"0":"")+x}
-function parse(s){var p=s.split("-");return new Date(+p[0],+p[1]-1,+p[2])}
+/* CONFIGURAÇÃO FIREBASE */
+var FB = "https://zigs-30299-default-rtdb.firebaseio.com/";
+var DB = "zigfrida";
+var KEY = "zig:";
+var nomeUsuario = localStorage.getItem(KEY+"nome") || "";
+var dadosRemotos = {};
+var sincronizando = false;
+
+/* FUNÇÕES DO FIREBASE */
+function urlFirebase(path){
+  return FB.replace(/\/+$/,"")+"/"+DB+"/"+path+".json";
+}
+
+function statusConexao(tipo,mensagem){
+  var el=document.getElementById("connection");
+  el.className="connection "+tipo;
+  el.textContent=mensagem;
+}
+
+function iso(d){
+  var m=d.getMonth()+1,x=d.getDate();
+  return d.getFullYear()+"-"+(m<10?"0":"")+m+"-"+(x<10?"0":"")+x;
+}
+
+function parse(s){
+  var p=s.split("-");
+  return new Date(+p[0],+p[1]-1,+p[2]);
+}
+
 var todayIso=iso(new Date());
-var start=sget(KEY+"start")||"2026-11-24";
+var start=localStorage.getItem(KEY+"start")||"2026-11-24";
 var view=todayIso;
+
+function dayNum(){
+  return Math.round((parse(view)-parse(start))/864e5)+1;
+}
+
+/* ALIMENTAÇÃO */
 var FOOD=[[25,"5,3"],[50,"10,7"],[75,"16,1"],[100,"21,5"]];
-function dayNum(){return Math.round((parse(view)-parse(start))/864e5)+1}
+
+/* CRONOGRAMA */
 function tasks(n){
  var t=[],f=FOOD[Math.min(n,4)-1];
+
  [["06:00"],["12:00"],["18:00"],["22:00"]].forEach(function(h){
-  t.push({id:"f"+h[0],h:h[0],k:"food",n:"Alimentação Recovery ("+f[0]+"%)",i:f[1]+" ml de alimento + 10 ml de água, pela sonda. Sem diluir."});
+  t.push({
+   id:"f"+h[0],h:h[0],k:"food",
+   n:"Alimentação Recovery ("+f[0]+"%)",
+   i:f[1]+" ml de alimento + 10 ml de água, pela sonda. Sem diluir."
+  });
  });
- if(n<=4)t.push({id:"vo1",h:"06:00",k:"med",n:"Vonau Vet 5 mg/ml",i:"0,64 ml · antiemético · dia "+n+" de 4"}),
-  t.push({id:"vo2",h:"18:00",k:"med",n:"Vonau Vet 5 mg/ml",i:"0,64 ml · antiemético · dia "+n+" de 4"});
- if(n<=3)t.push({id:"di",h:"08:00",k:"med",n:"Dipirona gotas",i:"4 gotas · analgésico · dia "+n+" de 3"});
- t.push({id:"am1",h:"10:00",k:"med",n:"Amoxicilina + clavulanato 250 mg/5 ml",i:n<=10?"1,4 ml · antibiótico · dia "+n+" de 10":""});
- t.push({id:"am2",h:"22:00",k:"med",n:"Amoxicilina + clavulanato 250 mg/5 ml",i:n<=10?"1,4 ml · antibiótico · dia "+n+" de 10":""});
- if(n>10){t=t.filter(function(x){return x.id!=="am1"&&x.id!=="am2"})}
- if(n<=4)t.push({id:"pr",h:"12:00",k:"med",n:"Prelone 3 mg/ml",i:"0,5 ml · anti-inflamatório · dia "+n+" de 4"});
- t.push({id:"ur",h:"14:00",k:"med",n:"Ursacol 50 mg",i:"1 comprimido (diluir em água) · dia "+n+" de 30"});
- t.push({id:"sa",h:"19:00",k:"med",n:"SAMe 64 mg",i:"1 dose · dia "+n+" de 30"});
- t.push({id:"c1",h:"10:00",k:"care",n:"Limpeza da sonda + curativo da ferida",i:"Soro fisiológico com sabonete neutro e uma borrifada de rifocina. Depois cubra com atadura ou colar protetor. Curativo 1x ao dia."});
- t.push({id:"c2",h:"22:00",k:"care",n:"Limpeza da sonda",i:"Depois da última alimentação e medicação."});
- t=t.filter(function(x){if(x.id==="ur"||x.id==="sa")return n<=30;return true});
+
+ if(n<=4)
+  t.push(
+   {id:"vo1",h:"06:00",k:"med",n:"Vonau Vet 5 mg/ml",i:"0,64 ml · antiemético · dia "+n+" de 4"},
+   {id:"vo2",h:"18:00",k:"med",n:"Vonau Vet 5 mg/ml",i:"0,64 ml · antiemético · dia "+n+" de 4"}
+  );
+
+ if(n<=3)
+  t.push({id:"di",h:"08:00",k:"med",n:"Dipirona gotas",i:"4 gotas · analgésico · dia "+n+" de 3"});
+
+ t.push(
+  {id:"am1",h:"10:00",k:"med",n:"Amoxicilina + clavulanato 250 mg/5 ml",i:n<=10?"1,4 ml · antibiótico · dia "+n+" de 10":""},
+  {id:"am2",h:"22:00",k:"med",n:"Amoxicilina + clavulanato 250 mg/5 ml",i:n<=10?"1,4 ml · antibiótico · dia "+n+" de 10":""}
+ );
+
+ if(n>10)
+  t=t.filter(function(x){return x.id!=="am1"&&x.id!=="am2"});
+
+ if(n<=4)
+  t.push({id:"pr",h:"12:00",k:"med",n:"Prelone 3 mg/ml",i:"0,5 ml · anti-inflamatório · dia "+n+" de 4"});
+
+ t.push(
+  {id:"ur",h:"14:00",k:"med",n:"Ursacol 50 mg",i:"1 comprimido (diluir em água) · dia "+n+" de 30"},
+  {id:"sa",h:"19:00",k:"med",n:"SAMe 64 mg",i:"1 dose · dia "+n+" de 30"},
+  {id:"c1",h:"10:00",k:"care",n:"Limpeza da sonda + curativo da ferida",i:"Soro fisiológico com sabonete neutro e uma borrifada de rifocina. Depois cubra com atadura ou colar protetor. Curativo 1x ao dia."},
+  {id:"c2",h:"22:00",k:"care",n:"Limpeza da sonda",i:"Depois da última alimentação e medicação."}
+ );
+
+ t=t.filter(function(x){
+  if(x.id==="ur"||x.id==="sa")return n<=30;
+  return true;
+ });
+
  var ord={food:0,med:1,care:2};
- t.sort(function(a,b){return a.h<b.h?-1:a.h>b.h?1:ord[a.k]-ord[b.k]});
+ t.sort(function(a,b){
+  return a.h<b.h?-1:a.h>b.h?1:ord[a.k]-ord[b.k];
+ });
  return t;
 }
-function load(){var s=sget(KEY+"done:"+view);try{return s?JSON.parse(s):{}}catch(e){return {}}}
-function save(o){sset(KEY+"done:"+view,JSON.stringify(o))}
+
+/* DADOS */
+function load(){
+ return dadosRemotos[view]||{};
+}
+
+function save(o){
+ dadosRemotos[view]=o;
+}
+
+/* SINCRONIZAÇÃO */
+async function sincronizar(){
+ if(sincronizando)return;
+ sincronizando=true;
+
+ try{
+  /* Busca a data de início compartilhada */
+  var sr=await fetch(urlFirebase("start"));
+  if(!sr.ok)throw new Error("Erro ao buscar início");
+  var serverStart=await sr.json();
+
+  if(serverStart){
+   if(start!==serverStart){
+    start=serverStart;
+    localStorage.setItem(KEY+"start",start);
+    document.getElementById("start").value=start;
+    render();
+   }
+  }else{
+   await fetch(urlFirebase("start"),{
+    method:"PUT",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(start)
+   });
+  }
+
+  /* Busca as marcações do dia selecionado */
+  var r=await fetch(urlFirebase("done/"+view));
+  if(!r.ok)throw new Error("Erro ao buscar marcações");
+
+  var novosDados=await r.json()||{};
+  var antigos=JSON.stringify(dadosRemotos[view]||{});
+
+  dadosRemotos[view]=novosDados;
+
+  if(antigos!==JSON.stringify(novosDados)){
+   render();
+  }
+
+  statusConexao("online","Conectado ao Firebase · sincronização ativa");
+
+ }catch(e){
+  console.error("Erro Firebase:",e);
+  statusConexao("offline","Sem conexão com o Firebase · tentando reconectar");
+ }finally{
+  sincronizando=false;
+ }
+}
+
+/* ESCAPE DE TEXTO */
+function escapeHTML(s){
+ return String(s).replace(/[&<>"']/g,function(c){
+  return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+ });
+}
+
+/* RENDERIZAÇÃO */
 function render(){
  var n=dayNum(),d=parse(view),done=load();
+
  var wd=["domingo","segunda","terça","quarta","quinta","sexta","sábado"][d.getDay()];
  var dd=("0"+d.getDate()).slice(-2)+"/"+("0"+(d.getMonth()+1)).slice(-2);
+
  var dl=document.getElementById("dl");
- dl.innerHTML=(view===todayIso?"Hoje · ":"")+wd+", "+dd+"<small>"+(n>=1?"Dia "+n+" do tratamento":"Antes do início")+"</small>";
- var list=document.getElementById("list"),end=document.getElementById("end");
- if(n<1){list.innerHTML="";end.textContent="Esse dia é anterior ao início do tratamento.";document.getElementById("bar").style.width="0";document.getElementById("prog").textContent="";document.getElementById("next").hidden=true;return}
- var ts=tasks(n),now=new Date(),nm=now.getHours()*60+now.getMinutes();
+ dl.innerHTML=(view===todayIso?"Hoje · ":"")+wd+", "+dd+
+ "<small>"+(n>=1?"Dia "+n+" do tratamento":"Antes do início")+"</small>";
+
+ var list=document.getElementById("list");
+ var end=document.getElementById("end");
+
+ if(n<1){
+  list.innerHTML="";
+  end.textContent="Esse dia é anterior ao início do tratamento.";
+  document.getElementById("bar").style.width="0";
+  document.getElementById("prog").textContent="";
+  document.getElementById("next").hidden=true;
+  return;
+ }
+
+ var ts=tasks(n),now=new Date();
+ var nm=now.getHours()*60+now.getMinutes();
  var isT=view===todayIso,nextId=null;
- if(isT){for(var i=0;i<ts.length;i++){var p=ts[i].h.split(":");if(!done[ts[i].id+ts[i].h]&&(+p[0])*60+(+p[1])>=nm-30){nextId=ts[i].id+ts[i].h;break}}}
+
+ if(isT){
+  for(var i=0;i<ts.length;i++){
+   var p=ts[i].h.split(":");
+   if(!done[ts[i].id+ts[i].h]&&
+      (+p[0])*60+(+p[1])>=nm-30){
+    nextId=ts[i].id+ts[i].h;
+    break;
+   }
+  }
+ }
+
  var html="",c=0;
+
  ts.forEach(function(x){
-  var key=x.id+x.h,ok=!!done[key];if(ok)c++;
-  html+='<label class="t '+x.k+(ok?" done":"")+(key===nextId?" now":"")+'"><input type="checkbox" data-k="'+key+'"'+(ok?" checked":"")+'><span class="h">'+x.h+'</span><span><div class="n">'+x.n+'</div><div class="i">'+x.i+'</div></span></label>';
+  var key=x.id+x.h;
+  var registro=done[key];
+  var ok=!!registro;
+
+  if(ok)c++;
+
+  var autor=ok&&registro.name
+   ?'<div class="i">Marcado por: '+escapeHTML(registro.name)+
+    (registro.at?' · '+new Date(registro.at).toLocaleString("pt-BR"):'')+
+    '</div>'
+   :'';
+
+  html+='<label class="t '+x.k+
+   (ok?" done":"")+
+   (key===nextId?" now":"")+'">'+
+   '<input type="checkbox" data-k="'+key+'"'+
+   (ok?" checked":"")+'>'+
+   '<span class="h">'+x.h+'</span>'+
+   '<span><div class="n">'+x.n+'</div>'+
+   '<div class="i">'+x.i+'</div>'+autor+'</span></label>';
  });
+
  list.innerHTML=html;
+
  document.getElementById("bar").style.width=(100*c/ts.length)+"%";
  document.getElementById("prog").textContent=c+" de "+ts.length+" itens feitos";
+
  var nx=document.getElementById("next");
- if(isT&&nextId){var tk=ts.filter(function(x){return x.id+x.h===nextId});var same=ts.filter(function(x){return x.h===tk[0].h&&!done[x.id+x.h]});
-  nx.hidden=false;nx.innerHTML="<b>Próximo: "+tk[0].h+"</b> — "+same.map(function(x){return x.n.split(" (")[0]}).join(", ")}
- else if(isT&&c===ts.length){nx.hidden=false;nx.innerHTML="✅ Tudo feito por hoje!"}
- else nx.hidden=true;
- var ends=[];if(n===4)ends.push("Último dia de Vonau Vet e Prelone");if(n===3)ends.push("Último dia de Dipirona");if(n===10)ends.push("Último dia de amoxicilina");if(n===30)ends.push("Último dia de Ursacol e SAMe");
+
+ if(isT&&nextId){
+  var tk=ts.filter(function(x){return x.id+x.h===nextId});
+  var same=ts.filter(function(x){return x.h===tk[0].h&&!done[x.id+x.h]});
+  nx.hidden=false;
+  nx.innerHTML="<b>Próximo: "+tk[0].h+"</b> — "+
+   same.map(function(x){return x.n.split(" (")[0]}).join(", ");
+ }else if(isT&&c===ts.length){
+  nx.hidden=false;
+  nx.innerHTML="✅ Tudo feito por hoje!";
+ }else{
+  nx.hidden=true;
+ }
+
+ var ends=[];
+ if(n===4)ends.push("Último dia de Vonau Vet e Prelone");
+ if(n===3)ends.push("Último dia de Dipirona");
+ if(n===10)ends.push("Último dia de amoxicilina");
+ if(n===30)ends.push("Último dia de Ursacol e SAMe");
+
  var fz=n<4?"Amanhã a alimentação passa para "+FOOD[n][0]+"% ("+FOOD[n][1]+" ml).":"";
  end.textContent=ends.concat(fz?[fz]:[]).join(" · ");
 }
-document.getElementById("list").addEventListener("change",function(e){
- var k=e.target.getAttribute("data-k");if(!k)return;
- var o=load();if(e.target.checked)o[k]=1;else delete o[k];save(o);render();
+
+/* MARCAR E DESMARCAR */
+document.getElementById("list").addEventListener("change",async function(e){
+ var k=e.target.getAttribute("data-k");
+ if(!k)return;
+
+ var nome=document.getElementById("nome").value.trim();
+
+ if(e.target.checked&&!nome){
+  alert("Digite seu nome antes de marcar uma dose.");
+  e.target.checked=false;
+  return;
+ }
+
+ var o=load();
+ var marcado=e.target.checked;
+
+ if(marcado){
+  o[k]={
+   name:nome,
+   at:new Date().toISOString()
+  };
+ }else{
+  delete o[k];
+ }
+
+ save(o);
+ render();
+
+ try{
+  var response=await fetch(urlFirebase("done/"+view+"/"+k),{
+   method:marcado?"PUT":"DELETE",
+   headers:{"Content-Type":"application/json"},
+   body:marcado?JSON.stringify(o[k]):undefined
+  });
+
+  if(!response.ok)throw new Error("Falha ao salvar");
+
+  statusConexao("online","Conectado ao Firebase · sincronização ativa");
+
+ }catch(err){
+  console.error(err);
+  statusConexao("offline","Erro ao salvar · verificando conexão");
+  alert("Não foi possível salvar a marcação. Verifique sua conexão.");
+  sincronizar();
+ }
 });
-function go(x){var d=parse(view);d.setDate(d.getDate()+x);view=iso(d);render()}
+
+/* NAVEGAÇÃO */
+function go(x){
+ var d=parse(view);
+ d.setDate(d.getDate()+x);
+ view=iso(d);
+ render();
+ sincronizar();
+}
+
 document.getElementById("prev").onclick=function(){go(-1)};
 document.getElementById("nxt").onclick=function(){go(1)};
-document.getElementById("today").onclick=function(){view=todayIso;render()};
-document.getElementById("reset").onclick=function(){save({});render()};
-var si=document.getElementById("start");si.value=start;
-si.onchange=function(){if(si.value){start=si.value;sset(KEY+"start",start);render()}};
-setInterval(render,60000);
+document.getElementById("today").onclick=function(){
+ view=todayIso;
+ render();
+ sincronizar();
+};
+
+/* LIMPAR MARCAÇÕES DO DIA */
+document.getElementById("reset").onclick=async function(){
+ if(!confirm("Deseja apagar todas as marcações deste dia para todos os usuários?"))return;
+
+ try{
+  var response=await fetch(urlFirebase("done/"+view),{
+   method:"DELETE"
+  });
+
+  if(!response.ok)throw new Error("Falha ao limpar");
+
+  dadosRemotos[view]={};
+  render();
+  statusConexao("online","Marcações apagadas para todos");
+
+ }catch(e){
+  alert("Não foi possível limpar as marcações no Firebase.");
+  sincronizar();
+ }
+};
+
+/* NOME DO USUÁRIO */
+var nomeInput=document.getElementById("nome");
+nomeInput.value=nomeUsuario;
+
+nomeInput.addEventListener("input",function(){
+ nomeUsuario=this.value.trim();
+ localStorage.setItem(KEY+"nome",nomeUsuario);
+});
+
+/* DATA DE INÍCIO COMPARTILHADA */
+var si=document.getElementById("start");
+si.value=start;
+
+si.onchange=async function(){
+ if(!si.value)return;
+
+ start=si.value;
+ localStorage.setItem(KEY+"start",start);
+ render();
+
+ try{
+  var r=await fetch(urlFirebase("start"),{
+   method:"PUT",
+   headers:{"Content-Type":"application/json"},
+   body:JSON.stringify(start)
+  });
+
+  if(!r.ok)throw new Error("Erro ao atualizar data");
+  statusConexao("online","Data de início atualizada para todos");
+ }catch(e){
+  statusConexao("offline","Não foi possível atualizar a data de início");
+ }
+};
+
+/* INICIALIZAÇÃO */
 render();
+sincronizar();
+setInterval(sincronizar,5000);
+setInterval(function(){
+ todayIso=iso(new Date());
+ render();
+},60000);
 </script>
 </body>
 </html>
